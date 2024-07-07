@@ -1,0 +1,68 @@
+#!/bin/sh
+
+if [ ! -d $XDG_CONFIG_HOME/rdpmanager ]; then
+	mkdir $XDG_CONFIG_HOME/rdpmanager
+fi
+
+if [ ! -d $XDG_CONFIG_HOME/rdpmanager/rdp ]; then
+	mkdir $XDG_CONFIG_HOME/rdpmanager/rdp
+fi
+
+if [ ! -f $XDG_CONFIG_HOME/rdpmanager/config ]; then
+	echo '#!/bin/bash
+	# This is the base configuration file
+	# Your Preferences are stored here
+	
+	 UI="Term"
+
+	 PROG="xrdp"
+
+	 BASEDIR="$XDG_CONFIG_HOME/rdpmanager/rdp"
+
+	 BASEOPTIONS="+auto-reconnect +clipboard /cert:tofu"' > $XDG_CONFIG_HOME/rdpmanager/config
+fi
+
+source $XDG_CONFIG_HOME/rdpmanager/config
+
+CONNECTIONS=$(ls -1 $BASEDIR)
+
+select OPT in CREATE UPDATE DELETE $CONNECTIONS QUIT; do
+	case $OPT in
+		CREATE)
+			echo "Name of connection"
+			read NAME
+			echo "IP/hostname:"
+			read IP
+			echo "User:"
+			read USER
+			echo "Password:"
+			read PASSWORD
+			echo "Add a domain?(y/n):"
+			read DOMAIN_CHECK
+			if [ $DOMAIN_CHECK == "y" ]; then
+				echo "Domain:"
+				read DOMAIN
+				echo 'xfreerdp3 /v:'$IP' /d':$DOMAIN '/u:'$USER' /p:'$PASSWORD $BASEOPTIONS > $BASEDIR/$NAME
+			fi
+			echo 'xfreerdp3 /v:$IP /u:$USER /p:$PASSWORD $BASEOPTIONS' > $BASEDIR/$NAME
+			chmod +x $BASEDIR/$NAME
+			exit 1
+			;;
+		UPDATE)
+			echo "not implemented"
+			exit 1
+			;;
+		DELETE)
+			select OPT2 in $CONNECTIONS; do
+				rm -f $BASEDIR/$OPT2
+				break
+			done
+			;;
+		QUIT) 
+			exit 0
+			;;
+		*) sh $BASEDIR/$OPT
+			;;
+	esac
+	break
+done
