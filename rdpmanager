@@ -42,9 +42,11 @@ select OPT in CREATE UPDATE DELETE $CONNECTIONS QUIT; do
 			if [ $DOMAIN_CHECK == "y" ]; then
 				echo "Domain:"
 				read DOMAIN
-				echo 'xfreerdp3 /v:'$IP' /d':$DOMAIN '/u:'$USER' /p:'$PASSWORD $BASEOPTIONS > $BASEDIR/$NAME
+				echo 'xfreerdp3 /v:'$IP' /d':$DOMAIN '/u:'$USER' /p:'$PASSWORD $BASEOPTIONS> $BASEDIR/$NAME
 			fi
+			if [ $DOMAIN_CHECK == "n" ]; then
 			echo 'xfreerdp3 /v:'$IP' /u:'$USER' /p:'$PASSWORD $BASEOPTIONS > $BASEDIR/$NAME
+			fi
 			chmod +x $BASEDIR/$NAME
 			exit 1
 			;;
