@@ -44,7 +44,7 @@ select OPT in CREATE UPDATE DELETE $CONNECTIONS QUIT; do
 				read DOMAIN
 				echo 'xfreerdp3 /v:'$IP' /d':$DOMAIN '/u:'$USER' /p:'$PASSWORD $BASEOPTIONS > $BASEDIR/$NAME
 			fi
-			echo 'xfreerdp3 /v:$IP /u:$USER /p:$PASSWORD $BASEOPTIONS' > $BASEDIR/$NAME
+			echo 'xfreerdp3 /v:'$IP' /u:'$USER' /p:'$PASSWORD $BASEOPTIONS > $BASEDIR/$NAME
 			chmod +x $BASEDIR/$NAME
 			exit 1
 			;;
