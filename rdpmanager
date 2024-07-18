@@ -6,7 +6,6 @@ CONFIG_FILE_LOCATION="$XDG_CONFIG_HOME/rdpmanager"
 
 [ ! -d "$XDG_CONFIG_HOME/rdpmanager/rdp" ] && mkdir "$XDG_CONFIG_HOME/rdpmanager/rdp"
 
-
 if [ ! -f "$CONFIG_FILE_LOCATION/config" ]; then
 	echo "#!/bin/bash
 	# This is the base configuration file
@@ -21,13 +20,7 @@ if [ ! -f "$CONFIG_FILE_LOCATION/config" ]; then
 	 BASEOPTIONS=\"+auto-reconnect +clipboard /cert:tofu\"" > "$XDG_CONFIG_HOME/rdpmanager/config"
 fi
 
-CURRENT_LOCATION=$(pwd)
-
-cd "$CONFIG_FILE_LOCATION" || return 1 & printf "Can't access location %s" "$CONFIG_FILE_LOCATION"
-
-.	"./config"
-
-cd "$CURRENT_LOCATION" || return 1 & echo "Can't return to %s" "$CURRENT_LOCATION"
+.	"$CONFIG_FILE_LOCATION/config" || (return 1 & echo "Can't access config to " "$CONFIG_FILE_LOCATION")
 
 CONNECTIONS=$(ls -1 "$BASEDIR")
 
