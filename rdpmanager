@@ -1,14 +1,13 @@
 #!/bin/sh
 
-if [ ! -d $XDG_CONFIG_HOME/rdpmanager ]; then
-	mkdir $XDG_CONFIG_HOME/rdpmanager
-fi
+CONFIG_LOCATION="$XDG_CONFIG_HOME"/rdpmanager/config
 
-if [ ! -d $XDG_CONFIG_HOME/rdpmanager/rdp ]; then
-	mkdir $XDG_CONFIG_HOME/rdpmanager/rdp
-fi
+[ ! -d "$XDG_CONFIG_HOME"/rdpmanager ] && mkdir "$XDG_CONFIG_HOME"/rdpmanager
 
-if [ ! -f $XDG_CONFIG_HOME/rdpmanager/config ]; then
+[ ! -d "$XDG_CONFIG_HOME"/rdpmanager/rdp ] && mkdir "$XDG_CONFIG_HOME"/rdpmanager/rdp
+
+
+if [ ! -f "$CONFIG_LOCATION" ]; then
 	echo '#!/bin/bash
 	# This is the base configuration file
 	# Your Preferences are stored here
@@ -22,7 +21,7 @@ if [ ! -f $XDG_CONFIG_HOME/rdpmanager/config ]; then
 	 BASEOPTIONS="+auto-reconnect +clipboard /cert:tofu"' > $XDG_CONFIG_HOME/rdpmanager/config
 fi
 
-source $XDG_CONFIG_HOME/rdpmanager/config
+. $CONFIG_LOCATION
 
 CONNECTIONS=$(ls -1 $BASEDIR)
 
