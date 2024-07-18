@@ -1,52 +1,58 @@
 #!/bin/sh
 
-CONFIG_LOCATION="$XDG_CONFIG_HOME"/rdpmanager/config
+CONFIG_FILE_LOCATION="$XDG_CONFIG_HOME/rdpmanager"
 
-[ ! -d "$XDG_CONFIG_HOME"/rdpmanager ] && mkdir "$XDG_CONFIG_HOME"/rdpmanager
+[ ! -d "$XDG_CONFIG_HOME/rdpmanager" ] && mkdir "$XDG_CONFIG_HOME/rdpmanager"
 
-[ ! -d "$XDG_CONFIG_HOME"/rdpmanager/rdp ] && mkdir "$XDG_CONFIG_HOME"/rdpmanager/rdp
+[ ! -d "$XDG_CONFIG_HOME/rdpmanager/rdp" ] && mkdir "$XDG_CONFIG_HOME/rdpmanager/rdp"
 
 
-if [ ! -f "$CONFIG_LOCATION" ]; then
-	echo '#!/bin/bash
+if [ ! -f "$CONFIG_FILE_LOCATION/config" ]; then
+	echo "#!/bin/bash
 	# This is the base configuration file
 	# Your Preferences are stored here
 	
-	 UI="Term"
+	 UI=\"Term\"
 
-	 PROG="xrdp"
+	 PROG=\"xrdp\"
 
-	 BASEDIR="$XDG_CONFIG_HOME/rdpmanager/rdp"
+	 BASEDIR=\"$XDG_CONFIG_HOME/rdpmanager/rdp\"
 
-	 BASEOPTIONS="+auto-reconnect +clipboard /cert:tofu"' > $XDG_CONFIG_HOME/rdpmanager/config
+	 BASEOPTIONS=\"+auto-reconnect +clipboard /cert:tofu\"" > "$XDG_CONFIG_HOME/rdpmanager/config"
 fi
 
-. $CONFIG_LOCATION
+CURRENT_LOCATION=$(pwd)
 
-CONNECTIONS=$(ls -1 $BASEDIR)
+cd "$CONFIG_FILE_LOCATION" || return 1 & printf "Can't access location %s" "$CONFIG_FILE_LOCATION"
+
+.	"./config"
+
+cd "$CURRENT_LOCATION" || return 1 & echo "Can't return to %s" "$CURRENT_LOCATION"
+
+CONNECTIONS=$(ls -1 "$BASEDIR")
 
 select OPT in CREATE UPDATE DELETE $CONNECTIONS QUIT; do
 	case $OPT in
 		CREATE)
 			echo "Name of connection"
-			read NAME
+			read -r NAME
 			echo "IP/hostname:"
-			read IP
+			read -r IP
 			echo "User:"
-			read USER
+			read -r USER
 			echo "Password:"
-			read PASSWORD
+			read -r PASSWORD
 			echo "Add a domain?(y/n):"
-			read DOMAIN_CHECK
+			read -r DOMAIN_CHECK
 			if [ $DOMAIN_CHECK == "y" ]; then
 				echo "Domain:"
-				read DOMAIN
+				read -r DOMAIN
 				echo 'xfreerdp3 /v:'$IP' /d':$DOMAIN '/u:'$USER' /p:'$PASSWORD $BASEOPTIONS> $BASEDIR/$NAME
 			fi
 			if [ $DOMAIN_CHECK == "n" ]; then
 			echo 'xfreerdp3 /v:'$IP' /u:'$USER' /p:'$PASSWORD $BASEOPTIONS > $BASEDIR/$NAME
 			fi
-			chmod +x $BASEDIR/$NAME
+			chmod +x "$BASEDIR/$NAME"
 			exit 1
 			;;
 		UPDATE)
